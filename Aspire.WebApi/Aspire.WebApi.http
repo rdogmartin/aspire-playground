@@ -4,3 +4,19 @@ GET {{Aspire.WebApi_HostAddress}}/api/version
 Accept: application/json
 
 ###
+
+GET {{Aspire.WebApi_HostAddress}}/api/contact/1
+Accept: application/json
+
+###
+
+POST {{Aspire.WebApi_HostAddress}}/api/contact HTTP/1.1
+content-type: application/json
+
+{
+    "id": 0,
+    "name": "John Doe",
+    "email": "none@nospam.com"
+}
+
+###

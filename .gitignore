@@ -396,3 +396,8 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Above this are things added by Git when selecting Visual Studio for .gitignore generation at repo creation
+
+# MacOS system files
+.DS_Store

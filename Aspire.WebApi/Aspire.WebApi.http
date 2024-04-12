@@ -1,6 +1,6 @@
 @Aspire.WebApi_HostAddress = http://localhost:5117
 
-GET {{Aspire.WebApi_HostAddress}}/weatherforecast/
+GET {{Aspire.WebApi_HostAddress}}/api/version
 Accept: application/json
 
 ###

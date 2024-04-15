@@ -28,7 +28,10 @@ public class ContactController : ControllerBase
     public ActionResult<Contact> Post(Contact contact)
     {
         // TODO: Persist to DB
-        contact = contact with { Id = 1 };
+        contact = contact with { Id = 1, Occupation = "Software Dev" };
+
+        // Contact contact2 = new Contact(1, "John Doe", "none@nospam.cm") { Occupation = "Software Dev" };
+        // contact.Occupation = "Software Developer";
 
         return CreatedAtAction(nameof(Get), new { id = contact.Id }, contact);
     }

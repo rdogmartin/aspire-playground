@@ -4,13 +4,15 @@ using Aspire.WebApi.Dtos;
 using Aspire.WebApi.ValueObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Aspire.WebApi.Managers;
+using System.ComponentModel.DataAnnotations;
 
 namespace Aspire.WebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 [AllowAnonymous]
-public class ContactController : ControllerBase
+public class ContactController(ContactManager contactManager) : ControllerBase
 {
     [HttpGet("{id}")]
     [Produces("application/json")]
@@ -21,18 +23,30 @@ public class ContactController : ControllerBase
         return new Contact(id, "John Doe", "none@nospam.com");
     }
 
-    [HttpPost]
+    [HttpPost("AddContact_ThrowException")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult<Contact> Post(Contact contact)
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public ActionResult<Contact> AddContact_ThrowException(Contact contact)
     {
-        // TODO: Persist to DB
-        contact = contact with { Id = 1, Occupation = "Software Dev" };
-
-        // Contact contact2 = new Contact(1, "John Doe", "none@nospam.cm") { Occupation = "Software Dev" };
-        // contact.Occupation = "Software Developer";
+        contact = contactManager.AddContactThrowException(contact);
 
         return CreatedAtAction(nameof(Get), new { id = contact.Id }, contact);
+    }
+
+    [HttpPost("AddContact_ReturnObject")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public ActionResult<Contact> AddContact_ReturnObject(Contact contact)
+    {
+        var response = contactManager.AddContactUseReturnObject(contact);
+
+        if (response.ValidationResult != ValidationResult.Success)
+        {
+            return UnprocessableEntity(response.ValidationResult);
+        }
+
+        return CreatedAtAction(nameof(Get), new { id = response.Contact.Id }, response.Contact);
     }
 }

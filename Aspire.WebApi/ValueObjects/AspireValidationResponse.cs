@@ -11,7 +11,7 @@ namespace Aspire.WebApi.ValueObjects;
 /// <param name="Status">The HTTP status code associated with the error.</param>
 /// <param name="Errors">A dictionary containing the validation errors, where the key is the field name and the value is the error message.</param>
 /// <param name="TraceId">The trace identifier for the request, useful for debugging and logging.</param>
- public record class AspireValidationErrorResponse(
+ public record class AspireValidationResponse(
     [property: JsonPropertyName("type")] string Type,
     [property: JsonPropertyName("title")] string Title,
     [property: JsonPropertyName("status")]int Status,

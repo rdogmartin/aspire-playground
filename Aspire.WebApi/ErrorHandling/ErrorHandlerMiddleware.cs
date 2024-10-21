@@ -38,7 +38,7 @@ public class ErrorHandlerMiddleware
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
                     await response.WriteAsync(JsonSerializer.Serialize(new { message = error?.Message }));
                     break;
-                case ValidationErrorException ex:
+                case AspireValidationException ex:
                     await WriteValidationExceptionResponse(context, ex);
                     break;
                 default:
@@ -50,14 +50,14 @@ public class ErrorHandlerMiddleware
         }
     }
 
-    private async static Task WriteValidationExceptionResponse(HttpContext context, ValidationErrorException ex)
+    private async static Task WriteValidationExceptionResponse(HttpContext context, AspireValidationException ex)
     {
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
 
         var errorSource = !string.IsNullOrWhiteSpace(ex.ErrorSource) ? ex.ErrorSource : "Error";
 
-        var response = new AspireValidationErrorResponse(
+        var response = new AspireValidationResponse(
             Type: ex.GetType().Name,
             Title: "Aspire Business Validation Error",
             Status: context.Response.StatusCode,

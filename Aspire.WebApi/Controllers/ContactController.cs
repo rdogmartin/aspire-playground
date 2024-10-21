@@ -24,7 +24,7 @@ public class ContactController(ContactManager contactManager) : ControllerBase
     [HttpPost("AddContact")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(AspireValidationErrorResponse), StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(typeof(AspireValidationResponse), StatusCodes.Status422UnprocessableEntity)]
     public ActionResult<Contact> AddContact(Contact contact)
     {
         contact = contactManager.AddContact(contact);

@@ -8,12 +8,12 @@ public class ContactManager
     {
         if (contact.Id > 0)
         {
-            throw new ValidationErrorException("Contact already exists.", "Contact");
+            throw new AspireValidationException("Contact already exists.", "Contact");
         }
 
         if (contact.Occupation == "Freeloader")
         {
-            throw new ValidationErrorException("Freeloader is not a valid occupation.", nameof(contact.Occupation));
+            throw new AspireValidationException("Freeloader is not a valid occupation.", nameof(contact.Occupation));
         }
 
         // TODO: Persist to DB. Fake it for now.

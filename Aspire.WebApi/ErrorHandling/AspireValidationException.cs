@@ -2,24 +2,24 @@
 
 namespace Aspire.WebApi;
 
-public class ValidationErrorException : ApplicationException
+public class AspireValidationException : ApplicationException
 {
     public string ErrorSource { get; }
     
-    public ValidationErrorException() : base() {
+    public AspireValidationException() : base() {
         ErrorSource = string.Empty;
      }
 
-    public ValidationErrorException(string message) : base(message) {
+    public AspireValidationException(string message) : base(message) {
         ErrorSource = string.Empty;
     }
 
-    public ValidationErrorException(string message, string errorSource) : base(message) {
+    public AspireValidationException(string message, string errorSource) : base(message) {
         ErrorSource = errorSource;
         //this.Data.Add("ErrorSource", errorSource);
     }
 
-    public ValidationErrorException(string message, params object[] args)
+    public AspireValidationException(string message, params object[] args)
         : base(String.Format(CultureInfo.CurrentCulture, message, args))
     {
         ErrorSource = string.Empty;

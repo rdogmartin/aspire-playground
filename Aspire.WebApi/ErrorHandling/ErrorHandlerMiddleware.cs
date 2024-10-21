@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Text.Json;
+using Aspire.WebApi.ValueObjects;
 
 namespace Aspire.WebApi.ErrorHandling;
 
@@ -9,16 +10,8 @@ namespace Aspire.WebApi.ErrorHandling;
 /// </summary>
 public class ErrorHandlerMiddleware
 {
-    /// <summary>
-    /// The request delegate handles each HTTP request.
-    /// </summary>
     private readonly RequestDelegate _next;
 
-
-    /// <summary>
-    /// Initialize an instance of the class.
-    /// </summary>
-    /// <param name="next">An instance of <see cref="RequestDelegate" /></param>
     public ErrorHandlerMiddleware(RequestDelegate next)
     {
         _next = next;
@@ -41,24 +34,37 @@ public class ErrorHandlerMiddleware
 
             switch (error)
             {
-                case KeyNotFoundException e:
-                    // not found error
-                    response.StatusCode = (int)HttpStatusCode.NotFound;
-                    break;
-                case UnauthorizedAccessException e:
+                case UnauthorizedAccessException:
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    await response.WriteAsync(JsonSerializer.Serialize(new { message = error?.Message }));
                     break;
-                case ValidationException e:
-                    response.StatusCode = (int)HttpStatusCode.UnprocessableEntity;
+                case ValidationErrorException ex:
+                    await WriteValidationExceptionResponse(context, ex);
                     break;
                 default:
-                    // unhandled error
+                    // Unhandled error
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    await response.WriteAsync(JsonSerializer.Serialize(new { message = error?.Message }));
                     break;
             }
-
-            var result = JsonSerializer.Serialize(new { message = error?.Message });
-            await response.WriteAsync(result);
         }
+    }
+
+    private async static Task WriteValidationExceptionResponse(HttpContext context, ValidationErrorException ex)
+    {
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+
+        var errorSource = !string.IsNullOrWhiteSpace(ex.ErrorSource) ? ex.ErrorSource : "Error";
+
+        var response = new AspireValidationErrorResponse(
+            Type: ex.GetType().Name,
+            Title: "Aspire Business Validation Error",
+            Status: context.Response.StatusCode,
+            Errors: new Dictionary<string, string> { { errorSource, ex.Message } },
+            TraceId: context.TraceIdentifier
+        );
+
+        await context.Response.WriteAsJsonAsync(response);
     }
 }

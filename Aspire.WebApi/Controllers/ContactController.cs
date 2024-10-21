@@ -1,11 +1,9 @@
-﻿using System.Diagnostics;
-using System.Reflection;
+﻿using System.Reflection;
 using Aspire.WebApi.Dtos;
+using Aspire.WebApi.Managers;
 using Aspire.WebApi.ValueObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Aspire.WebApi.Managers;
-using System.ComponentModel.DataAnnotations;
 
 namespace Aspire.WebApi.Controllers;
 
@@ -20,33 +18,17 @@ public class ContactController(ContactManager contactManager) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult<Contact> Get(int id)
     {
-        return new Contact(id, "John Doe", "none@nospam.com");
+        return new Contact(id, "John Doe", "john@gmail.com");
     }
 
-    [HttpPost("AddContact_ThrowException")]
+    [HttpPost("AddContact")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public ActionResult<Contact> AddContact_ThrowException(Contact contact)
+    [ProducesResponseType(typeof(AspireValidationErrorResponse), StatusCodes.Status422UnprocessableEntity)]
+    public ActionResult<Contact> AddContact(Contact contact)
     {
-        contact = contactManager.AddContactThrowException(contact);
+        contact = contactManager.AddContact(contact);
 
         return CreatedAtAction(nameof(Get), new { id = contact.Id }, contact);
-    }
-
-    [HttpPost("AddContact_ReturnObject")]
-    [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public ActionResult<Contact> AddContact_ReturnObject(Contact contact)
-    {
-        var response = contactManager.AddContactUseReturnObject(contact);
-
-        if (response.ValidationResult != ValidationResult.Success)
-        {
-            return UnprocessableEntity(response.ValidationResult);
-        }
-
-        return CreatedAtAction(nameof(Get), new { id = response.Contact.Id }, response.Contact);
     }
 }

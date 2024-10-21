@@ -3,16 +3,18 @@ using Aspire.WebApi.Managers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions((options) =>
+        // This defines the structure of the JSON that is returned when the .NET model validation fails.
+        options.InvalidModelStateResponseFactory = (context) => InvalidModelStateResponse.Generate(context)
+    );
+
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<ContactManager>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

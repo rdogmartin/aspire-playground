@@ -16,7 +16,6 @@ public class AspireValidationException : ApplicationException
 
     public AspireValidationException(string message, string errorSource) : base(message) {
         ErrorSource = errorSource;
-        //this.Data.Add("ErrorSource", errorSource);
     }
 
     public AspireValidationException(string message, params object[] args)
